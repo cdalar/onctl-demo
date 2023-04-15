@@ -1,0 +1,55 @@
+name: onctl-pr
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, reopened, synchronize, closed]
+
+env:
+  # Cloud Provider aws or hetzner
+  CLOUD_PROVIDER: ${{ vars.CLOUD_PROVIDER }}
+  # Hetzner Cloud Token
+  HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
+  # AWS Credentials
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_DEFAULT_REGION: ${{ vars.AWS_REGION }}
+  # Github Token with pull-request write permissions
+  GH_TOKEN: ${{ github.token }}
+
+jobs:
+  preview-env:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }} 
+          known_hosts: 'just-a-placeholder-so-we-dont-get-errors'
+      - name: Install onctl
+        run: |
+          wget https://www.github.com/cdalar/onctl/releases/latest/download/onctl-linux-amd64.tar.gz
+          tar zxvf onctl-linux-amd64.tar.gz
+          sudo mv onctl /usr/local/bin/
+          onctl version
+          echo ${{ secrets.SSH_PUBLIC_KEY }} > ~/.ssh/id_rsa.pub
+      - name: deploy
+        if: github.event.action != 'closed'
+        run: |
+          onctl deploy -p 80 
+          ssh-keyscan $(jq -r '.public_ip' onctl-deploy.json) >> ~/.ssh/known_hosts
+          DOCKER_HOST=$(jq -r '.docker_host' onctl-deploy.json) docker compose up -d --build
+          gh pr comment ${{ github.event.pull_request.number }} -b "Deployed to $(jq -r '.public_url' onctl-deploy.json)"
+      - name: destroy
+        if: github.event.action == 'closed'
+        run: |
+          cd $GITHUB_WORKSPACE
+          onctl delete self
