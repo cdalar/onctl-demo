@@ -44,12 +44,11 @@ jobs:
       - name: deploy
         if: github.event.action != 'closed'
         run: |
-          onctl deploy -p 80 
+          onctl create -p 80 
           ssh-keyscan $(jq -r '.public_ip' onctl-deploy.json) >> ~/.ssh/known_hosts
           DOCKER_HOST=$(jq -r '.docker_host' onctl-deploy.json) docker compose up -d --build
           gh pr comment ${{ github.event.pull_request.number }} -b "Deployed to $(jq -r '.public_url' onctl-deploy.json)"
       - name: destroy
         if: github.event.action == 'closed'
         run: |
-          cd $GITHUB_WORKSPACE
-          onctl delete self
+          onctl destroy self
