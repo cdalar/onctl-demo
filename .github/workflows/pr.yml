@@ -34,6 +34,8 @@ jobs:
         uses: cdalar/onctl-action@v2
         with:
           args: up
+          SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: up
         if: github.event.action == 'closed'
         uses: cdalar/onctl-action@v2
