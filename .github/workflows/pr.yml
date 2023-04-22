@@ -33,7 +33,7 @@ jobs:
         uses: shimataro/ssh-key-action@v2
         with:
           key: ${{ secrets.SSH_PRIVATE_KEY }} 
-          known_hosts: ''
+          known_hosts: 'dummy'
       - name: Create pub file
         run: |
           echo ${{ secrets.SSH_PUBLIC_KEY }} > ~/.ssh/id_rsa.pub
