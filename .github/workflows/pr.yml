@@ -16,7 +16,7 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_DEFAULT_REGION: ${{ vars.AWS_REGION }}
   # Github Token with pull-request write permissions
-  # GH_TOKEN: ${{ github.token }}
+  GH_TOKEN: ${{ github.token }}
 
 jobs:
   preview-env:
