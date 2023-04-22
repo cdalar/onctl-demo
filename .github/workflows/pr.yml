@@ -34,13 +34,9 @@ jobs:
         with:
           key: ${{ secrets.SSH_PRIVATE_KEY }} 
           known_hosts: ''
-      # - name: Install onctl
-      #   run: |
-      #     wget https://www.github.com/cdalar/onctl/releases/latest/download/onctl-linux-amd64.tar.gz
-      #     tar zxvf onctl-linux-amd64.tar.gz
-      #     sudo mv onctl /usr/local/bin/
-      #     onctl version
-      #     echo ${{ secrets.SSH_PUBLIC_KEY }} > ~/.ssh/id_rsa.pub
+      - name: Create pub file
+        run: |
+          echo ${{ secrets.SSH_PUBLIC_KEY }} > ~/.ssh/id_rsa.pub
       # - name: deploy
       #   if: github.event.action != 'closed'
       #   run: |
