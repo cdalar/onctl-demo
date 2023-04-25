@@ -44,3 +44,5 @@ jobs:
         uses: cdalar/onctl-action@v2
         with:
           args: down self
+          SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
