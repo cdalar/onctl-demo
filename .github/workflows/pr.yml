@@ -42,6 +42,8 @@ jobs:
       - name: down
         if: github.event.action == 'closed'
         uses: cdalar/onctl-action@v2
+        env:
+          ONCTL_LOG: DEBUG
         with:
           args: down self
           SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}
