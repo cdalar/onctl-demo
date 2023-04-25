@@ -1,6 +1,7 @@
 name: onctl-pr
 
 on:
+  workflow_dispatch:
   pull_request:
     branches:
       - main
